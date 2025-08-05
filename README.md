@@ -183,6 +183,6 @@ backend/
 ## 🔗 GitHub 이슈 기반 개발
 
 GitHub Issues를 통해 문서화했습니다.
-👉 [정혜빈 담당 이슈 전체 목록 보기](https://github.com/Gyeongjo119/mouem-zip/issues?q=is%3Aissue+state%3Aclosed+assignee%3AhyebinJeong)
+👉 [이슈 목록 보기](https://github.com/Gyeongjo119/mouem-zip/issues?q=is%3Aissue+state%3Aclosed+assignee%3AhyebinJeong)
 
 ---
