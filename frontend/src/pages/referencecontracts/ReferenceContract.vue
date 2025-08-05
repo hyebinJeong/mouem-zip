@@ -56,6 +56,27 @@ const isHardReload = () => {
   return navType === 'reload' || navType === 'navigate';
 };
 
+//유효성 검사
+const allowOnlyNumbers = (event, modelRef) => {
+  const value = event.target.value;
+  if (/^\d*$/.test(value)) {
+    modelRef.value = value;
+  } else {
+    console.log('유효성에 어긋납니다!');
+    event.target.value = modelRef.value;
+  }
+};
+
+const allowOnlyText = (event, modelRef) => {
+  const value = event.target.value;
+  if (/^[ㄱ-ㅎ가-힣a-zA-Z\s]*$/.test(value)) {
+    modelRef.value = value;
+  } else {
+    console.log('유효성에 어긋납니다!');
+    event.target.value = modelRef.value;
+  }
+};
+
 onMounted(() => {
   const fromSpecialPage = sessionStorage.getItem('fromSpecialPage') === 'true';
   const contractData = sessionStorage.getItem('contractData');
@@ -95,9 +116,9 @@ onMounted(() => {
     startDate.value = data.startDate || '';
     endDate.value = data.endDate || '';
     special.value =
-      Array.isArray(data.special) && data.special.length > 0
-        ? data.special
-        : [''];
+        Array.isArray(data.special) && data.special.length > 0
+            ? data.special
+            : [''];
     landCategory.value = data.landCategory || '';
     landArea.value = data.landArea || '';
     buildingArea.value = data.buildingArea || '';
@@ -107,7 +128,7 @@ onMounted(() => {
 
   // 특약 선택 합치기
   const selected = JSON.parse(
-    sessionStorage.getItem('selectedClauses') || '[]'
+      sessionStorage.getItem('selectedClauses') || '[]'
   );
   const newClauses = selected.map((clause) => clause.text).filter(Boolean);
   newClauses.forEach((clause) => {
@@ -121,27 +142,27 @@ onMounted(() => {
 
 // 입력 감시해서 세션에 저장
 watch(
-  [
-    contractName,
-    lessor,
-    lessee,
-    address,
-    contractAmount,
-    deposit,
-    rent,
-    structure,
-    maintenanceFee,
-    startDate,
-    endDate,
-    special,
-    landCategory,
-    landArea,
-    buildingArea,
-    leasePart,
-    leaseArea,
-  ],
-  saveContractToSession,
-  { deep: true }
+    [
+      contractName,
+      lessor,
+      lessee,
+      address,
+      contractAmount,
+      deposit,
+      rent,
+      structure,
+      maintenanceFee,
+      startDate,
+      endDate,
+      special,
+      landCategory,
+      landArea,
+      buildingArea,
+      leasePart,
+      leaseArea,
+    ],
+    saveContractToSession,
+    { deep: true }
 );
 
 // 특약 입력 제어
@@ -179,7 +200,7 @@ const onSubmit = async () => {
 
   // 특약 최소 1개
   const validSpecials = special.value.filter(
-    (term) => term && term.trim() !== ''
+      (term) => term && term.trim() !== ''
   );
   if (validSpecials.length === 0) {
     alert('특약사항을 최소 1개 이상 입력하거나 선택해주세요.');
@@ -238,132 +259,109 @@ const goToSpecialPage = () => {
     <div class="contract-box">
       <h1 class="title">계약서 작성을 위해 필요한 정보를 입력해주세요.</h1>
       <form class="form-grid" @submit.prevent="onSubmit">
-        <!-- ✅ 계약서 이름 맨 위 -->
         <div class="form-row full">
           <label>계약서 이름</label>
-          <input v-model="contractName" type="text" placeholder="성명" />
+          <input v-model="contractName" type="text" placeholder="계약서 이름을 작성해주세요." />
         </div>
-        <div class="form-row">
-          <label>임대인(집주인)</label>
-          <input v-model="lessor" type="text" placeholder="성명" />
-        </div>
-        <div class="form-row">
-          <label>임차인(세입자)</label>
-          <input v-model="lessee" type="text" placeholder="성명" />
-        </div>
-        <div class="form-row full">
-          <label>소재지</label>
-          <input
-            v-model="address"
-            type="text"
-            placeholder="도로명 주소를 입력해주세요"
-          />
-        </div>
-        <div class="form-row">
-          <label>토지 지목</label>
-          <input v-model="landCategory" type="text" placeholder="대" />
-        </div>
-        <div class="form-row">
-          <label>토지 면적</label>
-          <input v-model="landArea" type="text" placeholder="m²" />
-        </div>
-        <div class="form-row">
-          <label>건물 구조·용도</label>
-          <input v-model="structure" type="text" placeholder="다세대 주택" />
-        </div>
-        <div class="form-row">
-          <label>건물 면적</label>
-          <input v-model="buildingArea" type="text" placeholder="m²" />
-        </div>
-        <div class="form-row">
-          <label>임차할 부분</label>
-          <input v-model="leasePart" type="text" placeholder="동·호수" />
-        </div>
-        <div class="form-row">
-          <label>임차할 면적</label>
-          <input v-model="leaseArea" type="text" placeholder="m²" />
-        </div>
-        <div class="form-row">
-          <label>보증금</label>
-          <input v-model="deposit" type="text" placeholder="원" />
-        </div>
-        <div class="form-row">
-          <label>계약금</label>
-          <input v-model="contractAmount" type="text" placeholder="원" />
-        </div>
-        <div class="form-row">
-          <label>잔금</label>
-          <input v-model="rent" type="text" placeholder="원" />
-        </div>
-        <div class="form-row">
-          <label>관리비</label>
-          <input v-model="maintenanceFee" type="text" placeholder="원" />
-        </div>
-        <div class="form-row full date-range">
-          <label>임대차 기간</label>
-          <div class="date-inputs">
-            <input v-model="startDate" type="date" />
-            <span>부터</span>
-            <input v-model="endDate" type="date" />
-            <span>까지</span>
+
+        <div class="grid-2col">
+          <div class="left-col">
+            <div class="form-row">
+              <label>임대인(집주인)</label>
+              <input v-model="lessor" type="text" placeholder="성명" @input="allowOnlyText($event, lessor)" />
+            </div>
+            <div class="form-row full">
+              <label>소재지</label>
+              <input v-model="address" type="text" placeholder="도로명 주소를 입력해주세요." />
+            </div>
+            <div class="form-row">
+              <label>토지 지목</label>
+              <input v-model="landCategory" type="text" placeholder="대" />
+            </div>
+            <div class="form-row">
+              <label>건물 구조·용도</label>
+              <input v-model="structure" type="text" placeholder="다세대 주택" />
+            </div>
+            <div class="form-row">
+              <label>임차할 부분</label>
+              <input v-model="leasePart" type="text" placeholder="동·호수" />
+            </div>
+            <div class="form-row">
+              <label>보증금</label>
+              <input v-model="deposit" type="text" placeholder="원" @input="allowOnlyNumbers($event, deposit)"/>
+            </div>
+            <div class="form-row date-range-vertical align-start">
+              <label class="align-top">임대차 기간</label>
+              <div class="date-block">
+                <div class="date-line">
+                  <input v-model="startDate" type="date" />
+                  <span>부터</span>
+                </div>
+                <div class="date-line">
+                  <input v-model="endDate" type="date" />
+                  <span>까지</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="right-col">
+            <div class="form-row">
+              <label>임차인(세입자)</label>
+              <input v-model="lessee" type="text" placeholder="성명" @input="allowOnlyText($event, lessee)" />
+            </div>
+            <div class="form-row">
+              <label>토지 면적</label>
+              <input v-model="landArea" type="text" placeholder="m²" @input="allowOnlyNumbers($event, landArea)"/>
+            </div>
+            <div class="form-row">
+              <label>건물 면적</label>
+              <input v-model="buildingArea" type="text" placeholder="m²" @input="allowOnlyNumbers($event, buildingArea)"/>
+            </div>
+            <div class="form-row">
+              <label>임차할 면적</label>
+              <input v-model="leaseArea" type="text" placeholder="m²" @input="allowOnlyNumbers($event, leaseArea)"/>
+            </div>
+            <div class="form-row">
+              <label>계약금</label>
+              <input v-model="contractAmount" type="text" placeholder="원" @input="allowOnlyNumbers($event, contractAmount)"/>
+            </div>
+            <div class="form-row">
+              <label>잔금</label>
+              <input v-model="rent" type="text" placeholder="원"  @input="allowOnlyNumbers($event, rent)"/>
+            </div>
+            <div class="form-row">
+              <label>관리비</label>
+              <input v-model="maintenanceFee" type="text" placeholder="원" @input="allowOnlyNumbers($event, maintenanceFee)"/>
+            </div>
           </div>
         </div>
 
-        <!-- 특약사항 -->
         <div class="form-row full special-terms">
           <label>특약 사항</label>
           <div class="special-input-wrapper">
             <div class="special-list">
-              <div
-                class="special-input"
-                v-for="(term, index) in special"
-                :key="index"
-              >
-                <textarea
-                  v-model="special[index]"
-                  placeholder="특약 사항을 입력하세요"
-                  rows="3"
-                ></textarea>
+              <div class="special-input" v-for="(term, index) in special" :key="index">
+                <textarea v-model="special[index]" placeholder="특약 사항을 입력하세요." rows="3"></textarea>
                 <div class="btn-group">
-                  <button
-                    v-if="index === special.length - 1"
-                    type="button"
-                    class="btn-small add"
-                    @click="addSpecialTerm"
-                  >
-                    ➕
+                  <button v-if="index === special.length - 1" type="button" class="btn-small add" @click="addSpecialTerm">
+                    <i class="bi bi-plus-lg icon-white"></i>
                   </button>
-                  <button
-                    type="button"
-                    class="btn-small remove"
-                    @click="removeSpecialTerm(index)"
-                  >
-                    ➖
+                  <button type="button" class="btn-small remove" @click="removeSpecialTerm(index)">
+                    <i class="bi bi-dash-lg icon-white"></i>
                   </button>
                 </div>
               </div>
             </div>
             <div class="side-controls">
-              <button
-                type="button"
-                class="btn-template"
-                @click="goToSpecialPage"
-              >
-                특약 예시에서 선택하기
-              </button>
+              <button type="button" class="btn-template" @click="goToSpecialPage">특약 예시에서 선택하기</button>
               <p class="tip">특약사항을 추가해드릴게요.</p>
             </div>
           </div>
         </div>
 
         <div class="button-group full">
-          <button
-            type="button"
-            class="btn-back"
-            @click="router.push({ name: 'home' })"
-          >
-            뒤로 가기
-          </button>
+          <button type="button" class="btn-back" @click="router.push({ name: 'home' })">뒤로 가기</button>
           <button type="submit" class="btn-submit">작성 완료</button>
         </div>
       </form>
@@ -379,12 +377,12 @@ const goToSpecialPage = () => {
   background-color: white;
 }
 .contract-box {
-  background-color: #f5f7fa;
+  background-color: #F7F9FC;
   border-radius: 16px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.06);
-  padding: 40px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+  padding: 70px;
   width: 100%;
-  max-width: 920px;
+  max-width: 1100px;
 }
 .title {
   font-size: 26px;
@@ -396,11 +394,17 @@ const goToSpecialPage = () => {
   flex-direction: column;
   gap: 24px;
 }
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+}
 .form-row {
   display: flex;
   align-items: center;
   width: 100%;
   gap: 16px;
+  margin-bottom: 20px;
 }
 .form-row.full {
   flex-wrap: wrap;
@@ -412,6 +416,7 @@ label {
   flex-shrink: 0;
   font-size: 15px;
 }
+
 input[type='text'],
 input[type='date'] {
   flex-grow: 1;
@@ -426,10 +431,44 @@ input[type='date'] {
   align-items: center;
   flex-grow: 1;
 }
-.date-range label {
-  width: 160px;
+
+.align-start {
+  align-items: flex-start;
 }
 
+.align-top {
+  padding-top: 10px;
+}
+
+.date-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.date-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.date-line input[type='date'] {
+  flex-grow: 1;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  height: 44px;
+  box-sizing: border-box;
+}
+
+.date-line span {
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+}
 .special-terms .special-input-wrapper {
   display: flex;
   gap: 16px;
@@ -470,10 +509,17 @@ input[type='date'] {
   white-space: nowrap;
 }
 .btn-small.add {
-  background-color: skyblue;
+  background-color: #1A80E5;
 }
 .btn-small.remove {
-  background-color: palevioletred;
+  background-color: #FE5252;
+}
+
+.icon-white {
+  color: #fff;
+  font-size: 20px;
+  text-shadow: 0 0 1px #fff,
+  0 0 1px #fff;
 }
 .side-controls {
   display: flex;
@@ -483,24 +529,27 @@ input[type='date'] {
   padding-top: 6px;
 }
 .btn-template {
-  background-color: #eef5ff;
-  color: #1e60d1;
+  background-color: #1A80E5;
+  color: #ffffff;
   font-weight: bold;
   border: none;
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .tip {
   font-size: 13px;
   color: #888;
   margin: 0;
+  margin-left: 18px;
 }
 .button-group {
   display: flex;
   justify-content: space-between;
   margin-top: 40px;
 }
+
 .btn-back {
   background-color: #f0f0f0;
   padding: 12px 24px;
@@ -510,12 +559,39 @@ input[type='date'] {
   cursor: pointer;
 }
 .btn-submit {
-  background-color: #007bff;
+  background-color: #1A80E5;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: bold;
   border: none;
   cursor: pointer;
+}
+
+.btn-small.add:hover {
+  background-color: rgb(33, 112, 193);
+  transform: scale(1.05);
+  transition: all 0.1s ease-in-out;
+}
+
+.btn-small.remove:hover {
+  background-color: rgb(218, 81, 81);
+  transform: scale(1.05);
+  transition: all 0.1s ease-in-out;
+}
+
+.btn-template:hover {
+  background-color: #2563eb;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-submit:hover {
+  background-color: #2563eb;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-back:hover {
+  background-color: #e0e0e0;
 }
 </style>

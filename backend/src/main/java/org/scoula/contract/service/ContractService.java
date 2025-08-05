@@ -3,8 +3,6 @@ package org.scoula.contract.service;
 import lombok.RequiredArgsConstructor;
 import org.scoula.contract.domain.ContractDTO;
 import org.scoula.contract.mapper.ContractMapper;
-import org.scoula.specialclause.domain.SpecialClauseDTO;
-import org.scoula.specialclause.mapper.SpecialClauseMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +13,6 @@ import java.util.List;
 public class ContractService {
 
     private final ContractMapper contractMapper;
-    private final SpecialClauseMapper specialClauseMapper;
 
     @Transactional
     public void saveContract(ContractDTO contractDTO) {

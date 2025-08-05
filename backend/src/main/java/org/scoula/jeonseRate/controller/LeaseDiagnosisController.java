@@ -1,5 +1,9 @@
 package org.scoula.jeonseRate.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.scoula.jeonseRate.domain.JeonseAnalysisVO;
 import org.scoula.jeonseRate.dto.AddressInfoDTO;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.*;
 
+@Api(tags = "jeonse-rate-analysis-controller")
 @RestController
 @RequestMapping("/api/diagnosis")
 @RequiredArgsConstructor
@@ -29,6 +34,12 @@ public class LeaseDiagnosisController {
     private final JeonseAnalysisMapper jeonseAnalysisMapper;
 
 
+    @ApiOperation(value = "Analyze Jeonse Rate", notes = "Analyze the jeonse ratio based on address and deposit")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Analysis success (results in response body)"),
+            @ApiResponse(code = 400, message = "Missing address or request data"),
+            @ApiResponse(code = 404, message = "No matching real estate deal found")
+    })
     @PostMapping("/leasePer")
     public ResponseEntity<?> analyzeLease(@RequestBody JeonseRateDTO request) {
         String keyword = request.getAddress();
@@ -174,6 +185,14 @@ public class LeaseDiagnosisController {
     }
 
     // 예상 전세가율 조회
+    @ApiOperation(
+            value = "Get Jeonse Rate Result",
+            notes = "Retrieve previously saved jeonse rate analysis result using registry ID"
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully retrieved jeonse rate"),
+            @ApiResponse(code = 404, message = "Jeonse rate not found for the given registry ID (data not saved or not analyzed yet)")
+    })
     @GetMapping("/result")
     public ResponseEntity<?> getJeonseAnalysisResult(@RequestParam("registerId") int registerId) {
         Integer ratio  = jeonseAnalysisMapper.findJeonseRatioByRegisterId(registerId);

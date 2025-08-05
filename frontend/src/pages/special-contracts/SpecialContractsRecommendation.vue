@@ -30,7 +30,7 @@
 
       <div
         class="character-box"
-        @click="$router.push({ name: 'reference-contract' })"
+        @click="$router.push({ name: 'ReferenceContract' })"
       >
         <img src="@/assets/skybuddy.png" alt="버디 캐릭터" />
         <div class="speech-bubble">
