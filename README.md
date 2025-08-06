@@ -157,7 +157,7 @@ backend/
 |--------|----------|------|
 | `GET` | `/api/reports/{reportId}` | 리포트 단건 조회 (reportId 기반) |
 | `GET` | `/api/reports?userId=1&registryId=1` | 유저 ID + 등기부 ID 기반 리포트 조회<br>**Query**: `userId`, `registryId` |
-| `POST` | `/api/reports?userId=1&registryId=` | 최종 리포트 자동 저장<br>**Query**: `userId`, `registryId` |
+| `POST` | `/api/reports?userId=1&registryId=1` | 최종 리포트 자동 저장<br>**Query**: `userId`, `registryId` |
 
 ---
 
