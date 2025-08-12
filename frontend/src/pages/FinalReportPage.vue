@@ -15,11 +15,13 @@ import checklistStore from '@/stores/checklistStore';
 import AnalysisCards from '@/components/AnalysisCards.vue';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { useAuthStore } from '@/stores/auth';
 
+const auth = useAuthStore();
 const route = useRoute();
 const showModal = ref(false);
 const reportData = ref(null);
-const isLoadingPDF = ref(false); // ✅ 로딩 상태 추가
+const isLoadingPDF = ref(false); // 로딩 상태 추가
 
 const openModal = () => (showModal.value = true);
 const closeModal = () => (showModal.value = false);
@@ -44,7 +46,7 @@ const registryKeys = [
   { key: 'trustInfos', label: '신탁등기' },
 ];
 
-// ✅ PDF 다운로드 (로딩 처리 추가)
+// PDF 다운로드 (로딩 처리 추가)
 async function downloadPDF() {
   const pdfArea = document.getElementById('pdf-area');
   if (!pdfArea) return;
@@ -102,6 +104,9 @@ onMounted(async () => {
       // final_report에 저장 (없으면 생성)
       await fetch(`/api/reports?userId=${userId}&registryId=${registryId}`, {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
       });
 
       // 저장 후 조회
@@ -138,23 +143,23 @@ onMounted(async () => {
     class="FinalReportPage container py-5 mb-4 text-center"
     v-if="reportData"
   >
-    <div class="position-relative mb-4">
-      <h1 class="text-center mb-0">
+    <section class="position-relative mb-4" aria-labelledby="page-title">
+      <h1 id="page-title" class="text-center mb-0">
         <span class="main-color fw-semibold">최종 분석</span>이 완료되었어요.
       </h1>
 
       <!-- 마이페이지에서 들어왔을 때만 버튼 보이게 -->
       <button
         v-if="route.query.from === 'myPage'"
-        class="btn btn-secondary position-absolute top-50 translate-middle-y end-0"
+        class="btn btn-primary position-absolute top-50 translate-middle-y end-0"
         @click="downloadPDF"
         :disabled="isLoadingPDF"
       >
         {{ isLoadingPDF ? 'PDF 생성 중...' : '다운로드' }}
       </button>
-    </div>
+    </section>
 
-    <!-- ✅ PDF 생성 중일 때 로딩 오버레이 -->
+    <!-- PDF 생성 중일 때 로딩 오버레이 -->
     <div
       v-if="isLoadingPDF"
       class="loading-overlay d-flex justify-content-center align-items-center"
@@ -170,7 +175,7 @@ onMounted(async () => {
         모든 등급은
         <span
           class="text-primary text-decoration-underline"
-          role="button"
+          type="button"
           style="cursor: pointer"
           @click="openModal"
           aria-label="등급 판정 기준 안내 모달 열기"
@@ -182,18 +187,18 @@ onMounted(async () => {
       <DiagnosisGradeInfoModal :show="showModal" @close="closeModal" />
 
       <!-- 등급 -->
-      <div class="final-grade-wrap">
+      <section class="final-grade-wrap">
         <FinalGrade
           :registry="reportData.registryRating"
           :jeonse="reportData.jeonseRatioRating"
           :checklist="reportData.checklistRating"
         />
-      </div>
+      </section>
 
       <hr class="my-4 border-top border-secondary-subtle w-75 mx-auto" />
 
       <!-- 전세가율 -->
-      <div
+      <section
         class="final-jeonse-wrap mt-5 mb-4"
         role="region"
         aria-labelledby="jeonse-title"
@@ -207,20 +212,24 @@ onMounted(async () => {
             class="d-flex flex-column flex-md-row justify-content-center align-items-end"
             style="max-width: 960px; margin: 0 auto; height: auto"
           >
-            <div class="final-jeonse-col" style="width: 100%; max-width: 480px">
-              <FinalJeonse
-                :jeonseRatio="reportData.jeonseRatio"
-                :regionAvgJeonseRatio="reportData.regionAvgJeonseRatio"
-              />
+            <div class="final-jeonse-col w-100" style="max-width: 480px">
+              <div class="h-100 d-flex align-items-end">
+                <FinalJeonse
+                  :jeonseRatio="reportData.jeonseRatio"
+                  :regionAvgJeonseRatio="reportData.regionAvgJeonseRatio"
+                />
+              </div>
             </div>
-            <div class="final-jeonse-col" style="margin-left: 4rem">
-              <FinalJeonseCard
-                :salePrice="reportData.expectedSellingPrice"
-                :jeonseDeposit="reportData.deposit"
-                :jeonseRatio="reportData.jeonseRatio"
-                :jeonseRatioRating="reportData.jeonseRatioRating"
-                :username="reportData.username"
-              />
+            <div class="final-jeonse-col w-100" style="max-width: 480px">
+              <div class="d-flex h-100">
+                <FinalJeonseCard
+                  :salePrice="reportData.expectedSellingPrice"
+                  :jeonseDeposit="reportData.deposit"
+                  :jeonseRatio="reportData.jeonseRatio"
+                  :jeonseRatioRating="reportData.jeonseRatioRating"
+                  :username="reportData.username"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -233,12 +242,12 @@ onMounted(async () => {
             >으로, 분석이 어려워요.
           </h2>
         </div>
-      </div>
+      </section>
 
       <hr class="my-4 border-top border-secondary-subtle w-75 mt-5" />
 
       <!-- 등기부등본 -->
-      <div
+      <section
         class="final-registry-wrap mt-5"
         role="region"
         aria-labelledby="registry-title"
@@ -254,12 +263,12 @@ onMounted(async () => {
             :analysisItems="registryKeys"
           />
         </div>
-      </div>
+      </section>
 
       <hr class="my-4 border-top border-secondary-subtle w-75 mx-auto" />
 
       <!-- 체크리스트 -->
-      <div
+      <section
         class="final-checklist-wrap mt-5 mb-3"
         style="margin: 6rem 0"
         role="region"
@@ -287,11 +296,11 @@ onMounted(async () => {
             </h2>
           </div>
         </div>
-      </div>
+      </section>
     </div>
     <!-- PDF 영역 끝 -->
 
-    <div class="final-btn-wrap d-flex justify-content-center">
+    <nav class="final-btn-wrap d-flex justify-content-center">
       <button
         class="btn btn-primary px-4 py-2 rounded-3 background-main"
         @click="goToHome"
@@ -304,12 +313,12 @@ onMounted(async () => {
       >
         마이페이지로 이동
       </button>
-    </div>
+    </nav>
   </div>
 </template>
 
 <style scoped>
-/* ✅ 로딩 오버레이 스타일 */
+/* 로딩 오버레이 스타일 */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -399,6 +408,12 @@ onMounted(async () => {
 
   .mobile-only-break {
     display: block;
+  }
+}
+
+@media (max-width: 576px) {
+  .jeonse-card-wrap p {
+    white-space: normal;
   }
 }
 </style>

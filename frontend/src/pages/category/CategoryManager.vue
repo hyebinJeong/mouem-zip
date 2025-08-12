@@ -10,7 +10,7 @@
       <h5 class="fw-bold mb-0">카테고리 관리</h5>
     </div>
     <p class="text-muted">
-      선택한 단어에 대해 확인하고 수정 및 관리할 수 있는 페이지입니다.
+      전체 카테고리 목록을 확인하고 관리하는 페이지입니다.
     </p>
 
     <!-- 검색창 -->
@@ -29,8 +29,8 @@
     <table class="table align-middle">
       <thead>
         <tr>
-          <th style="width: 20%">카테고리</th>
-          <th style="width: 60%">카테고리 설명</th>
+          <th style="width: 30%">카테고리</th>
+          <th style="width: 50%">카테고리 설명</th>
           <th style="width: 20%">카테고리 색상</th>
         </tr>
       </thead>

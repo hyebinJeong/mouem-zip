@@ -20,6 +20,7 @@ onMounted(() => {
 async function goToAnalysis() {
   if (!auth.isLoggedIn) {
     // JWT가 없으면 로그인 페이지로 이동
+    alert('로그인이 필요합니다.');
     router.push('/login');
     return;
   }
@@ -256,8 +257,14 @@ async function goToAnalysis() {
   color: #28a745;
 }
 @keyframes stepFadeIn {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .step-box {
@@ -266,11 +273,15 @@ async function goToAnalysis() {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-
-.step-box:nth-of-type(1) { animation-delay: 0.25s; }
-.step-box:nth-of-type(3) { animation-delay: 0.5s; }
-.step-box:nth-of-type(5) { animation-delay: 0.75s; }
-
+.step-box:nth-of-type(1) {
+  animation-delay: 0.25s;
+}
+.step-box:nth-of-type(3) {
+  animation-delay: 0.5s;
+}
+.step-box:nth-of-type(5) {
+  animation-delay: 0.75s;
+}
 
 .step-box:hover {
   transform: scale(1.05);
@@ -278,20 +289,39 @@ async function goToAnalysis() {
 }
 
 @keyframes buddyJump {
-  0% { transform: translateY(0); }
-  30% { transform: translateY(-10px); }
-  50% { transform: translateY(0); }
-  70% { transform: translateY(-5px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  70% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
-
 @keyframes buddyWave {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(2deg); }
-  50% { transform: rotate(0deg); }
-  75% { transform: rotate(-2deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .buddy-character {

@@ -17,4 +17,7 @@ public class JeonseRateDTO {
     private String buildingType;    // 건물 유형
     private int areaAVGPrice;       // 지역 평균 매매가
     private SafetyGrade grade;      // 등급
+
+    // 선택값(프론트에서 줄 수도/안 줄 수도)
+    private Double excluUseAr;
 }

@@ -13,7 +13,9 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="FinalGrade">
+  <section class="FinalGrade" aria-labelledby="final-grade-title">
+    <!-- 스크린 리더용 숨김 제목-->
+    <h2 id="final-grade-title" class="visually-hidden">종합 등급</h2>
     <div class="donut-wrap">
       <div class="donut-item" v-if="registry">
         <DonutChart
@@ -37,7 +39,7 @@ const props = defineProps({
         />
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>

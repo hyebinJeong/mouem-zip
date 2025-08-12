@@ -1,0 +1,47 @@
+export default [
+    {
+        text: '임대인의 미납 세금을 확인하셨습니까?',
+        span: '<span style="font-size:14px; color:#1238b6;"><a href="https://www.hometax.go.kr" target="_blank" style="color:#1A80E5;">홈택스</a>를 통해 확인이 가능합니다.</span>',
+        riskColor: 'red'
+    },
+    {
+        text: '계약금·중도금·잔금 지급일 및 금액이 일치하는지 확인하셨습니까?',
+        span: null,
+        riskColor: 'yellow'
+    },
+    {
+        text: '입주 전 수리에 대해 확인하셨습니까?',
+        span: null,
+        riskColor: 'green'
+    },
+    {
+        text: '임대인이 등기부등본 상 소유주와 일치하는지 확인하셨습니까?',
+        span: null,
+        riskColor: 'red'
+    },
+    {
+        text: '임대인을 통해 선순위 세입자별 전세보증금 수준이 얼마인지 확인하셨습니까?',
+        span: null,
+        riskColor: 'red'
+    },
+    {
+        text: '임차주택의 사용·관리·수선 내용을 확인하셨습니까?',
+        span: null,
+        riskColor: 'green'
+    },
+    {
+        text: '불리한 특약이 없는지 확인하셨습니까?',
+        span: null,
+        riskColor: 'yellow'
+    },
+    {
+        text: '계약서상의 주소와 등기부등본 주소가 완벽히 일치하는지 확인하셨습니까?',
+        span: null,
+        riskColor: 'red'
+    },
+    {
+        text: '전입신고 가능 여부를 확인하셨습니까?',
+        span: null,
+        riskColor: 'red'
+    }
+]

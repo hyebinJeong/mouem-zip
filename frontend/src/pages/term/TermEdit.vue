@@ -76,8 +76,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useTermStore } from '@/stores/termStore';
-import axios from 'axios';
-
+import api from '@/api/index.js';
 const router = useRouter();
 const route = useRoute();
 const termStore = useTermStore();
@@ -98,7 +97,7 @@ const goBack = () => {
 
 const loadCategories = async () => {
   try {
-    const res = await axios.get('/api/category-manager');
+    const res = await api.get('/api/category-manager');
     categories.value = res.data;
   } catch (error) {
     console.error('카테고리 로딩 실패:', error);

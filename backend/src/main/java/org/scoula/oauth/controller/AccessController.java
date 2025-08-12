@@ -10,50 +10,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/check-access")
 public class AccessController {
-    @GetMapping("/safety-check")
+
+
+    // 회원 전용
+    @GetMapping({
+            "/safety-check",
+            "/safety-check/{id}",
+            "/agreement",
+            "/my",
+            "/contract-list",
+            "/report-list",
+            "/final-report",
+            "/referencecontracts",
+            "/referencecontracts/**"
+    })
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> checkSafetyCheckAccess() {
+    public ResponseEntity<?> checkUserAccess() {
         return ResponseEntity.ok("AUTHORIZED");
     }
 
-
-    @GetMapping("/agreement")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> checkAgreementCheckAccess() {
-        return ResponseEntity.ok("AUTHORIZED");
-    }
-
-    @GetMapping("/safety-check/{registerId}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> checkRegisterResultAccess(@PathVariable Long registerId) {
-        return ResponseEntity.ok("AUTHORIZED");
-    }
-
-    // 마이페이지
-    @GetMapping("/my")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> checkMyPageAccess() {
-        return ResponseEntity.ok("AUTHORIZED");
-    }
-
-//    // 체크리스트 (개인 분석용) 아직 라우터에 구현 안되어있음
-//    @GetMapping("/checklist/{registerId}")
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<?> checkChecklistAccess(@PathVariable Long registerId) {
-//        return ResponseEntity.ok("AUTHORIZED");
-//    }
-
-    // 관리자 페이지 접근 확인
-    @GetMapping("/admin")
+    // 관리자 전용
+    @GetMapping({
+            "/category",
+            "/category/**"  // add, edit/:id, term/**, special/** 모두 커버
+    })
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> checkAdminAccess() {
         return ResponseEntity.ok("AUTHORIZED");
     }
-
-    @GetMapping("/category/**")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> checkCategoryAccess() {
-        return ResponseEntity.ok("AUTHORIZED");
-    }
-
 }

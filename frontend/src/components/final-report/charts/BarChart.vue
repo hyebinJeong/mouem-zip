@@ -63,9 +63,13 @@ const chartOptions = {
 </script>
 
 <template>
-  <div class="BarChart">
+  <figure class="BarChart">
     <Bar :data="chartData" :options="chartOptions" :height="300" />
-  </div>
+    <!-- 스크린 리더용 숨김 설명 -->
+    <figcaption class="visually-hidden">
+      지역 평균 전세가율과 예상 전세가율 비교
+    </figcaption>
+  </figure>
 </template>
 
 <style scoped>

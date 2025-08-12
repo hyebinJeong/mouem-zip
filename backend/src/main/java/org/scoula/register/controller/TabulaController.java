@@ -5,6 +5,7 @@ import org.scoula.register.domain.RegistryRating;
 import org.scoula.register.domain.dto.*;
 import org.scoula.register.service.*;
 import org.scoula.register.util.RegisterRatingEvaluator;
+import org.scoula.register.util.RegisterUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class TabulaController {
     private final TrustServiceImpl trustServiceImpl;
 
     @PostMapping
-    public ResponseEntity<?> analyzeRegistry(@RequestParam("userId") Integer userId, @RequestParam("file") MultipartFile file, @RequestParam("address") String address, @RequestParam("registryName") String registryName) {
+    public ResponseEntity<?> analyzeRegistry(@RequestParam("userId") Integer userId, @RequestParam("file") MultipartFile file, @RequestParam("address") String address, @RequestParam("detail") String detail, @RequestParam("jeonsePrice") String jeonsePrice, @RequestParam("registryName") String registryName) {
         try {
             // S3 업로드
             String uploadedFileName = awsS3Service.uploadFile(file);
@@ -49,11 +50,27 @@ public class TabulaController {
             response.setTrustInfos(trustServiceImpl.extractTrustInfos(table));
 
             // 위험 등급 평가
-            RegistryRating registryRating = RegisterRatingEvaluator.evaluateRiskLevel(response);
+            long depositInWon = 0L; // try 밖에서 선언
+            try {
+                int depositInManWon = Integer.parseInt(jeonsePrice);
+                depositInWon = depositInManWon * 10_000L;
+                // depositInWon 으로 계산 진행
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            RiskEvaluationResult data = RegisterRatingEvaluator.evaluateRiskLevel(response, depositInWon);
+            RegistryRating registryRating = data.getRating();
+            long totalPriorAmount = data.getTotalPriorAmount();
 
-            int registerId = tabulaService.saveAnalysis(userId, address, response, registryName, registryRating, uploadedFileName);
+            // 면적 추출
+            String area = RegisterUtils.getArea(table, detail);
+//            System.out.println("면적 값: " + area);
+            int registerId = tabulaService.saveAnalysis(userId, address, response, registryName, registryRating, uploadedFileName, totalPriorAmount);
 
-            return ResponseEntity.ok(registerId);
+            Map<String, Object> result = new HashMap<>();
+            result.put("registerId", registerId);
+            result.put("area", area);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
@@ -115,6 +132,7 @@ public class TabulaController {
             result.put("address", dto.getAddress());
             result.put("rating", dto.getRegistryRating());
             result.put("fileUrl", fileUrl);
+            result.put("totalPriorAmount", dto.getTotalPriorAmount());
 
             return ResponseEntity.ok(result);
         } catch (NullPointerException e) {

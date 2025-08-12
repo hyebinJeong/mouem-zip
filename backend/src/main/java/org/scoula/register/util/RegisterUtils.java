@@ -1,7 +1,9 @@
 package org.scoula.register.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +73,7 @@ public class RegisterUtils {
 
         // 탐색할 키워드 목록
         String[] keywords = {
-                "채권자", "권리자", "근저당권자", "가등기권자", "수탁자", "전세권자"
+                "채권자", "권리자", "근저당권자", "가등기권자", "수탁자", "전세권자", "소유자"
         };
 
         int minIdx = Integer.MAX_VALUE;
@@ -178,5 +180,64 @@ public class RegisterUtils {
         // 쉼표 제거
         cleaned = cleaned.replaceAll(",", "");
         return cleaned;
+    }
+
+    // 동·호·층 추출
+    private static final Pattern DETAIL_PATTERN = Pattern.compile("(?:(\\d+)\\s*동)?\\s*[- ]?\\s*(\\d+)\\s*호?");
+
+    public static Map<String, String> parseDetailWithFloor(String detail) {
+        Matcher matcher = DETAIL_PATTERN.matcher(detail.trim());
+        Map<String, String> result = new HashMap<>();
+
+        if (matcher.find()) {
+            String dong = matcher.group(1) != null ? matcher.group(1) : "";
+            String ho = matcher.group(2);
+
+            result.put("동", dong);
+            result.put("호", ho);
+            result.put("층", extractFloor(ho));
+        } else {
+            result.put("동", "");
+            result.put("호", detail.trim());
+            result.put("층", extractFloor(detail));
+        }
+        return result;
+    }
+
+    // 호에서 층 추출
+    public static String extractFloor(String ho) {
+        String digits = ho.replaceAll("\\D", "");
+        String floorNum = "";
+        if (digits.length() >= 3) {
+            floorNum = digits.substring(0, digits.length() - 2);
+        } else if (digits.length() == 2) {
+            floorNum = digits.substring(0, 1);
+        }
+        return floorNum.isEmpty() ? "" : floorNum + "층";
+    }
+
+    // 면적 정보 가져오기
+    public static String getArea(List<List<String>> tableData, String detail) {
+        // detail에서 층 정보 추출
+        Map<String, String> detailInfo = parseDetailWithFloor(detail);
+        String floor = detailInfo.get("층");
+//        System.out.println("층 정보: " + floor);
+
+        for (List<String> row : tableData) {
+            if (row.size() < 4) continue;
+            String buildingNumber = normalizeText(row.get(2));
+            String buildingDetails = normalizeText(row.get(3));
+
+            // 건물번호에 층 정보(제1층 or 1층)가 포함되어 있는지 확인
+            if (buildingNumber.contains(floor) || buildingNumber.contains("제" + floor)) {
+                // 면적 추출
+                Pattern pattern = Pattern.compile("(\\d+(?:\\.\\d+)?)m2?");
+                Matcher matcher = pattern.matcher(buildingDetails);
+                if (matcher.find()) {
+                    return matcher.group(1); // 면적 값만 반환
+                }
+            }
+        }
+        return null;
     }
 }

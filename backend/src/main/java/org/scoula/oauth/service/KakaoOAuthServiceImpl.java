@@ -7,6 +7,7 @@ import org.scoula.oauth.domain.DTO.KakaoTokenResponseDTO;
 import org.scoula.oauth.domain.DTO.KakaoUserDTO;
 import org.scoula.oauth.mapper.UserMapper;
 import org.scoula.security.util.JwtProcessor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -21,6 +22,8 @@ public class KakaoOAuthServiceImpl implements KakaoOAuthService {
     private final UserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UserMapper userMapper;
+
+
 
     @Override
     public String getAccessTokenFromKakao(String code) {
@@ -121,26 +124,31 @@ public class KakaoOAuthServiceImpl implements KakaoOAuthService {
         userMapper.softDeleteUser(kakaoId);
     }
 
-    public void unlinkKakaoAccount(String accessToken) {
+    @Value("${kakao.adminKey}")
+    private String adminKey;
+
+    @Override
+    public void unlinkByAdminKey(Long kakaoId) {
         try {
             URL url = new URL("https://kapi.kakao.com/v1/user/unlink");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            conn.setRequestProperty("Authorization", "KakaoAK " + adminKey);
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
 
-            int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
-                System.out.println("[회원탈퇴 성공]");
-            } else {
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    System.out.println("[회원탈퇴 실패] " + line);
-                }
-                br.close();
+            String body = "target_id_type=user_id&target_id=" + kakaoId;
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(body.getBytes());
+                os.flush();
             }
 
+            int code = conn.getResponseCode();
+            if (code != 200) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream()))) {
+                    throw new IllegalStateException("Kakao unlink failed: " + br.readLine());
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException("카카오 회원 탈퇴 요청 실패", e);
         }

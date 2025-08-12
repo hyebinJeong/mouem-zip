@@ -63,10 +63,13 @@ public class LeaseDiagnosisController {
 
         // 5. 건물명
         String buildingName = addressInfo.getBdNm();
+        
+        // 6. 전용 면적
+        Double targetArea = request.getExcluUseAr();
 
         // 6. 해당 주소에 대한 매매가 평균 조회
         Optional<JeonseRateDTO> averageDealPriceOpt = dealSearchService.getDealAmount(
-                lawdCode, jibun, buildingName, recentMonths
+                lawdCode, jibun, buildingName, recentMonths, targetArea
         );
 
         // 조회된 매물이 없을 경우 메시지 반환

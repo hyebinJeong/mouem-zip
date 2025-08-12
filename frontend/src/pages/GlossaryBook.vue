@@ -78,13 +78,8 @@ export default {
     </div>
 
     <!-- 카드 리스트 -->
-    <div class="row justify-content-center g-4">
-      <div
-          class="col-12 col-sm-6 col-md-4"
-          v-for="item in filteredTerms"
-          :key="item.termId"
-          style="max-width: 380px;"
-      >
+    <div class="row justify-content-center g-4 row-cols-1 row-cols-sm-2 row-cols-md-3">
+      <div class="col" v-for="item in filteredTerms" :key="item.termId">
         <TermCard :term="item" @open="openModal" />
       </div>
     </div>
@@ -97,5 +92,13 @@ export default {
 <style scoped>
 .term-view {
   padding-bottom: 40px;
+  padding-left: 8rem;
+  padding-right: 8rem;
+}
+@media (min-width: 1400px) {
+  .term-view {
+    padding-left: 12rem;
+    padding-right: 12rem;
+  }
 }
 </style>

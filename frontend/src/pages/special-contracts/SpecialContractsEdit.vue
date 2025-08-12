@@ -16,14 +16,14 @@
     <form @submit.prevent="submitForm" class="mt-4">
       <div class="mb-3">
         <label class="form-label fw-semibold">특약분류</label>
-        <input v-model="type" type="text" class="form-control" />
+        <input v-model="category" type="text" class="form-control" />
       </div>
 
       <div class="mb-3">
         <label class="form-label fw-semibold">중요도</label>
         <select v-model="importance" class="form-select">
           <option value="높음">높음</option>
-          <option value="보통">보통</option>
+          <option value="중간">중간</option>
           <option value="낮음">낮음</option>
         </select>
       </div>
@@ -43,42 +43,77 @@
           취소
         </button>
         <button type="submit" class="btn btn-primary">수정</button>
-        <button type="button" class="btn btn-danger ms-2">삭제</button>
+        <button
+          type="button"
+          class="btn btn-danger ms-2"
+          @click="deleteContract"
+        >
+          삭제
+        </button>
       </div>
     </form>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useSpecialContractsStore } from '@/stores/specialContractsStore';
 
+const props = defineProps(['id']);  // 라우터에서 props로 받음
 const router = useRouter();
-const route = useRoute();
+const store = useSpecialContractsStore();
 
-const type = ref('');
+const category = ref('');
 const importance = ref('');
 const description = ref('');
 
-const goBack = () => {
-  router.back();
+const importanceColorMap = {
+  높음: '#FF0000',
+  중간: '#FFA500',
+  낮음: '#00FF00',
 };
 
-const submitForm = () => {
-  console.log({
-    type: type.value,
+const importanceColor = computed(() => importanceColorMap[importance.value] || '');
+
+const goBack = () => router.back();
+
+const submitForm = async () => {
+  if (!category.value || !importance.value || !description.value) {
+    alert('모든 항목을 입력해주세요.');
+    return;
+  }
+  await store.updateContract(props.id, {
+    category: category.value,
     importance: importance.value,
+    importanceColor: importanceColor.value,
     description: description.value,
   });
-  goBack();
+  router.push('/category/special');
 };
 
-// 수정할 데이터 불러오기 (예시)
-onMounted(() => {
-  // 실제로는 API 등을 통해 id(route.params.id) 기반 데이터 로드
-  type.value = '안전 장치 조항';
-  importance.value = '높음';
-  description.value =
-    '임대인은 임차인의 대학력 및 확정일자 확보 이전에 해당 부동산에 제3자와의 담보권 설정, 매도, 제3자 점유를 하지 않는다.';
+const deleteContract = async () => {
+  if (confirm('정말 삭제하시겠습니까?')) {
+    await store.deleteContract(props.id);
+    router.push('/category/special');
+  }
+};
+
+onMounted(async () => {
+  if (!props.id) {
+    alert('잘못된 접근입니다. ID가 없습니다.');
+    router.back();
+    return;
+  }
+  const contract = await store.fetchContractById(Number(props.id));//숫자변환
+  if (contract) {
+    category.value = contract.category || '';
+    importance.value = contract.importance || '';
+    description.value = contract.description || '';
+  } else {
+    alert('특약사항 데이터를 불러오지 못했습니다.');
+    router.back();
+  }
 });
 </script>
+

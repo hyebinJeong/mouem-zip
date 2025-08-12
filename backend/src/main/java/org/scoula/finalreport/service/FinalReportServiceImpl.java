@@ -47,6 +47,48 @@ public class FinalReportServiceImpl implements FinalReportService {
                     rawDto.getAnalysisJson(),
                     RegisterAnalysisResponse.class
             );
+
+            // 필터링 추가 (canceled == false)
+            registerAnalysis.setMortgageInfos(
+                    registerAnalysis.getMortgageInfos().stream()
+                            .filter(info -> !info.isCanceled())
+                            .toList()
+            );
+            registerAnalysis.setSeizureInfos(
+                    registerAnalysis.getSeizureInfos().stream()
+                            .filter(info -> !info.isCanceled())
+                            .toList()
+            );
+            registerAnalysis.setProvisionalSeizureInfos(
+                    registerAnalysis.getProvisionalSeizureInfos().stream()
+                            .filter(info -> !info.isCanceled())
+                            .toList()
+            );
+            registerAnalysis.setAuctionInfos(
+                    registerAnalysis.getAuctionInfos().stream()
+                            .filter(info -> !info.isCanceled())
+                            .toList()
+            );
+            registerAnalysis.setProvisionalRegistrationInfos(
+                    registerAnalysis.getProvisionalRegistrationInfos().stream()
+                            .filter(info -> !info.isCanceled())
+                            .toList()
+            );
+            registerAnalysis.setInjunctionInfos(
+                    registerAnalysis.getInjunctionInfos().stream()
+                            .filter(info -> !info.isCanceled())
+                            .toList()
+            );
+            registerAnalysis.setJeonseRightInfos(
+                    registerAnalysis.getJeonseRightInfos().stream()
+                            .filter(info -> !info.isCanceled())
+                            .toList()
+            );
+            registerAnalysis.setTrustInfos(
+                    registerAnalysis.getTrustInfos().stream()
+                            .filter(info -> !info.isCanceled())
+                            .toList()
+            );
         } catch (Exception e) {
             System.out.println("등기부분석 JSON 파싱 실패 문자열: " + rawDto.getAnalysisJson());
             throw new RuntimeException("등기부 분석 JSON 파싱 오류", e);

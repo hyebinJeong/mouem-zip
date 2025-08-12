@@ -54,6 +54,7 @@ const routes = [
   },
   {
     path: '/referencecontracts',
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -62,11 +63,11 @@ const routes = [
           import('@/pages/referencecontracts/ReferenceContract.vue'),
       },
       {
-        path: 'success/:id', // ✅ 상대 경로 + params
+        path: 'success/:id?',
         name: 'ReferenceContractSuccess',
         component: () =>
           import('@/pages/referencecontracts/ReferenceContractSuccess.vue'),
-        props: true, // 필요 시 id를 props로도 받을 수 있음
+        props: true,
       },
     ],
   },
@@ -82,7 +83,11 @@ const routes = [
     name: 'nondiagnosis',
     component: NonDiagnosis,
   },
-  { path: '/checklist/checklist', name: 'checklist', component: CheckList },
+  {
+    path: '/checklist/checklist',
+    name: 'checklist',
+    component: CheckList,
+  },
   { path: '/login', name: 'Login', component: LoginPage },
 
   {
@@ -135,22 +140,6 @@ const routes = [
     ],
   },
   {
-    path: '/referencecontracts',
-    children: [
-      {
-        path: '',
-        component: () =>
-          import('@/pages/referencecontracts/ReferenceContract.vue'),
-      },
-      {
-        path: '/referencecontracts/success',
-        name: 'ReferenceContractSuccess',
-        component: () =>
-          import('@/pages/referencecontracts/ReferenceContractSuccess.vue'),
-      },
-    ],
-  },
-  {
     path: '/recommendation',
     name: 'SpecialContractsRecommendation',
     component: () =>
@@ -160,18 +149,21 @@ const routes = [
     path: '/final-report',
     name: 'finalReportPage',
     component: FinalReportPage,
+    meta: { requiresAuth: true },
   },
 
   {
     path: '/contract-list',
     name: 'ContractListPage',
     component: () => import('@/pages/listpages/ContractListPage.vue'),
+    meta: { requiresAuth: true },
   },
 
   {
     path: '/report-list',
     name: 'reportList',
     component: () => import('@/pages/listpages/ReportListPage.vue'),
+    meta: { requiresAuth: true },
   },
 ];
 
@@ -208,7 +200,6 @@ router.beforeEach(async (to, from, next) => {
       }
     }
 
-    // 3) 백엔드 접근 체크 (선택)
     try {
       await axios.get('/api/check-access' + to.path, {
         headers: { Authorization: `Bearer ${auth.token}` },

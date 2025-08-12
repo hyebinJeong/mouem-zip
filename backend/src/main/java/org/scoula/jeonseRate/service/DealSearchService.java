@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  * 실거래가 기반 평균 매매가 계산 서비스
- * - 아파트 → 연립다세대 → 오피스텔 순으로 실거래 데이터를 조회
+ * - 아파트 → 오피스텔 → 연립다세대 순으로 실거래 데이터를 조회
  * - 입력 지번과 유사한 매물 필터링 후 평균 매매가 계산
  */
 @Service
@@ -45,7 +45,11 @@ public class DealSearchService {
      * @param recentMonths 조회 대상 월 목록
      * @return 유사 매물 평균 매매가 (단위: 만원)
      */
-    public Optional<JeonseRateDTO> getDealAmount(String lawdCode, String jibun ,String buildingName, List<String> recentMonths) {
+
+    @Value("${deal.area.tolerance:3.0}")
+    private double areaTolerance; // 기본 ±3.0㎡
+
+    public Optional<JeonseRateDTO> getDealAmount(String lawdCode, String jibun ,String buildingName, List<String> recentMonths, Double targetArea) {
         JeonseRateDTO jeonseRateDTO = new JeonseRateDTO();
         List<DealDTO> allDeals = new ArrayList<>();
 
@@ -58,25 +62,25 @@ public class DealSearchService {
             jeonseRateDTO.setBuildingType(HouseTypeCode.APARTMENT.getName());
         }
 
-        // 2. 아파트 매물 없으면 연립다세대 조회
+        // 2. 아파트 매물 없으면 오피스텔 조회
         if (allDeals.isEmpty()) {
             for (String month : recentMonths) {
                 DealResponseDTO response = getDeals(lawdCode, month, officeApiUrl);
                 allDeals.addAll(extractDeals(response));
             }
             if (!allDeals.isEmpty()) {
-                jeonseRateDTO.setBuildingType(HouseTypeCode.MULTI_HOUSE.getName());
+                jeonseRateDTO.setBuildingType(HouseTypeCode.OPISTEL.getName());
             }
         }
 
-        // 3. 연립다세대 매물 없으면 오피스텔 조회
+        // 3. 오피스텔 매물 없으면 연립다세대 조회
         if (allDeals.isEmpty()) {
             for (String month : recentMonths) {
                 DealResponseDTO response = getDeals(lawdCode, month, rowhouseApiUrl);
                 allDeals.addAll(extractDeals(response));
             }
             if (!allDeals.isEmpty()) {
-                jeonseRateDTO.setBuildingType(HouseTypeCode.OPISTEL.getName());
+                jeonseRateDTO.setBuildingType(HouseTypeCode.MULTI_HOUSE.getName());
             }
         }
 
@@ -88,6 +92,13 @@ public class DealSearchService {
         // 1차 필터: 지번 기준
         List<DealDTO> filteredByJibun = allDeals.stream()
                 .filter(d -> d.getJibun() != null && d.getJibun().equals(jibun))
+                .filter(d -> {
+                    if (d.getExcluUseAr() == null || targetArea == null) return false;
+                    // 문자열로 들어오기 때문에 Double.parseDouble() 해서 숫자로 변환
+                    double dealArea = Double.parseDouble(d.getExcluUseAr());
+
+                    return Math.abs(dealArea - targetArea) <= areaTolerance; // ±3.0㎡ 이내
+                })
                 .collect(Collectors.toList());
 
         // 2차 필터: 건물명 기준 (있을 경우만)
@@ -100,6 +111,7 @@ public class DealSearchService {
                             isSimilarName(buildingName, d.getMhouseNm());
                 })
                 .collect(Collectors.toList());
+
 
         // 매물이 없다면 판단 보류
         if (finalFiltered.isEmpty()) {

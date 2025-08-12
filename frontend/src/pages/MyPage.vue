@@ -10,18 +10,11 @@ const clientId = '88a530611ac6fa5a18f5747f67b6a359';
 const redirectUri = 'http://localhost:8080/';
 const auth = useAuthStore();
 const user = ref({ name: '', email: '', kakaoId: '' });
-// 임시 로그아웃 함수
+// 로그아웃 함수
 function onKakaoLogout() {
   auth.logout();
   const kakaoAuthUrl2 = `https://kauth.kakao.com/oauth/logout?client_id=${clientId}&logout_redirect_uri=${redirectUri}`;
   window.location.href = kakaoAuthUrl2;
-}
-// 리포트 목록 클릭시 이동
-function onReportClick(item) {
-  router.push({
-    name: 'finalReportPage',
-    query: { reportId: item.reportId, from: 'myPage' },
-  });
 }
 
 const reportPreview = ref([]);
@@ -87,19 +80,12 @@ onMounted(async () => {
 });
 
 async function onWithdraw() {
-  const kakaoAccessToken = sessionStorage.getItem('kakaoAccessToken');
-  if (!kakaoAccessToken) {
-    alert('카카오 access token이 없습니다.');
-    return;
-  }
-
+  if (!auth.isLoggedIn) return alert('로그인이 필요합니다.');
   if (confirm('정말로 회원 탈퇴하시겠습니까?')) {
     try {
       await axios.post(
         '/api/oauth/kakao/unlink',
-        {
-          kakaoAccessToken,
-        },
+        {},
         {
           headers: {
             Authorization: `Bearer ${auth.token}`,
@@ -109,7 +95,6 @@ async function onWithdraw() {
 
       alert('회원 탈퇴가 완료되었습니다.');
       auth.logout();
-      sessionStorage.removeItem('kakaoAccessToken');
       window.location.href = '/';
     } catch (error) {
       alert('회원 탈퇴에 실패했습니다.');
@@ -148,7 +133,9 @@ function goToReportDetail(item) {
     <div class="user-info">
       <p class="user-name">{{ user.name }}</p>
       <p class="user-email">{{ user.email }}</p>
-      <button @click="onKakaoLogout" class="btn">임시 로그아웃</button>
+      <button @click="onKakaoLogout" class="btn btn-outline-primary btn-sm">
+        로그아웃
+      </button>
       <p class="user-note">
         모든 리포트는 생성일로부터 50일이 지나면 자동 만료됩니다.<br />
         필요한 경우 <span class="pdf-highlight">PDF로 저장해 보관</span>하시는

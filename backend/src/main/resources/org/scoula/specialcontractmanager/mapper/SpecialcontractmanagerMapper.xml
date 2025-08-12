@@ -5,7 +5,7 @@
 
 <mapper namespace="org.scoula.specialcontractmanager.mapper.SpecialcontractmanagerMapper">
 
-    <resultMap id="SpecialcontractmanagerResult" type="org.scoula.specialcontractmanager.domain.SpecialcontractmanagerVO">
+    <resultMap id="SpecialContractMap" type="org.scoula.specialcontractmanager.domain.SpecialcontractmanagerVO">
         <id property="specialClauseId" column="special_clause_id" />
         <result property="category" column="category" />
         <result property="importance" column="importance" />
@@ -13,20 +13,20 @@
         <result property="description" column="description" />
     </resultMap>
 
-    <select id="selectAll" resultMap="SpecialcontractmanagerResult">
-        SELECT * FROM special_clause ORDER BY special_clause_id
+    <select id="findAll" resultMap="SpecialContractMap">
+        SELECT * FROM special_clause ORDER BY special_clause_id DESC
     </select>
 
-    <select id="selectById" parameterType="int" resultMap="SpecialcontractmanagerResult">
+    <select id="findById" resultMap="SpecialContractMap">
         SELECT * FROM special_clause WHERE special_clause_id = #{id}
     </select>
 
-    <insert id="insert" parameterType="org.scoula.specialcontractmanager.domain.SpecialcontractmanagerVO" useGeneratedKeys="true" keyProperty="specialClauseId">
+    <insert id="insert">
         INSERT INTO special_clause (category, importance, importance_color, description)
         VALUES (#{category}, #{importance}, #{importanceColor}, #{description})
     </insert>
 
-    <update id="update" parameterType="org.scoula.specialcontractmanager.domain.SpecialcontractmanagerVO">
+    <update id="update">
         UPDATE special_clause
         SET category = #{category},
             importance = #{importance},
@@ -35,7 +35,7 @@
         WHERE special_clause_id = #{specialClauseId}
     </update>
 
-    <delete id="delete" parameterType="int">
+    <delete id="delete">
         DELETE FROM special_clause WHERE special_clause_id = #{id}
     </delete>
 

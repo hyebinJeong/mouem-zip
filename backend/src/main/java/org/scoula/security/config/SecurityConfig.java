@@ -79,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // 접근 제한 무시 경로 설정 – resource
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/assets/**", "/*",
+        web.ignoring().antMatchers("/assets/**",
                 // Swagger 관련 url은 보안에서 제외
                 "/swagger-ui.html", "/webjars/**", "/swagger-resources/**", "/v2/api-docs"
         );
@@ -102,7 +102,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/check-access/admin").hasRole("ADMIN")      // 관리자 접근 체크
                 .antMatchers("/api/check-access/category/**").hasRole("ADMIN")
                 .antMatchers("/api/check-access/**").hasRole("USER")          // 유저 전용 API 보호
-                .anyRequest().permitAll();                                      // 임시 개발용으로 api 모두 허용
+                .antMatchers("/api/**").authenticated()                       // api 요청은 인증필요
+                .anyRequest().permitAll();
 
         http.cors();
 

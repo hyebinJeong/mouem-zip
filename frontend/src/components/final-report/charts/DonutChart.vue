@@ -49,7 +49,7 @@ watch(
 </script>
 
 <template>
-  <div class="DonutChart" v-if="chartData && chartOptions">
+  <figure class="DonutChart" v-if="chartData && chartOptions">
     <div class="canvas-container">
       <Doughnut
         :data="chartData"
@@ -61,8 +61,8 @@ watch(
         {{ props.grade }}
       </div>
     </div>
-    <div class="donut-label">{{ props.label }}</div>
-  </div>
+    <figcaption class="donut-label">{{ props.label }}</figcaption>
+  </figure>
 </template>
 
 <style scoped>

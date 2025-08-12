@@ -16,7 +16,7 @@
       <div class="mb-3">
         <label class="form-label fw-semibold">특약분류</label>
         <input
-          v-model="type"
+          v-model="category"
           type="text"
           class="form-control"
           placeholder="예: 안전 장치 조항"
@@ -28,7 +28,7 @@
         <select v-model="importance" class="form-select">
           <option disabled value="">중요도 선택</option>
           <option value="높음">높음</option>
-          <option value="보통">보통</option>
+          <option value="중간">중간</option>
           <option value="낮음">낮음</option>
         </select>
       </div>
@@ -54,24 +54,53 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useSpecialContractsStore } from '@/stores/specialContractsStore';
 
 const router = useRouter();
-const type = ref('');
+const store = useSpecialContractsStore();
+
+const category = ref('');
 const importance = ref('');
 const description = ref('');
+
+// 중요도에 따른 색상 코드 매핑
+const importanceColorMap = {
+  높음: '#FF0000',
+  중간: '#FFA500',
+  낮음: '#00FF00',
+};
+
+// computed로 색상 코드 계산
+const importanceColor = computed(
+  () => importanceColorMap[importance.value] || ''
+);
 
 const goBack = () => {
   router.back();
 };
 
-const submitForm = () => {
-  console.log({
-    type: type.value,
+const submitForm = async () => {
+  if (!category.value || !importance.value || !description.value) {
+    alert('모든 항목을 입력해주세요.');
+    return;
+  }
+
+  const newContract = {
+    category: category.value,
     importance: importance.value,
+    importanceColor: importanceColor.value, // 카멜케이스 적용
     description: description.value,
-  });
-  goBack();
+  };
+
+  try {
+    console.log('제출할 데이터:', newContract);
+    await store.addContract(newContract);
+    router.push('/category/special');
+  } catch (error) {
+    console.error('특약사항 추가 실패:', error);
+    alert('특약사항 추가 중 오류가 발생했습니다.');
+  }
 };
 </script>

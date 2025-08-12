@@ -55,7 +55,7 @@ public class TabulaService {
     }
 
     // 등기부등본 테이블에 저장
-    public int saveAnalysis(int userId, String address, RegisterAnalysisResponse response, String registryName, RegistryRating registryRating, String fileName) throws Exception {
+    public int saveAnalysis(int userId, String address, RegisterAnalysisResponse response, String registryName, RegistryRating registryRating, String fileName, long totalPriorAmount) throws Exception {
         String risks = objectMapper.writeValueAsString(response);
 
         RegisterDTO dto = new RegisterDTO();
@@ -65,6 +65,7 @@ public class TabulaService {
         dto.setRegistryName(registryName);
         dto.setRegistryRating(registryRating);
         dto.setFileName(fileName);
+        dto.setTotalPriorAmount(totalPriorAmount);
 
         registerMapper.insertRegister(dto);
 

@@ -32,9 +32,9 @@ public class ChecklistServiceImpl implements ChecklistService {
 
     private String calculateRating(List<Boolean> checkedList) {
         // 위험 판정 항목 인덱스 (0-based)
-        int[] dangerIndices = {0, 1, 3, 4, 7, 8};
-        int cautionIndex = 6;
-        int normalIndices[] = {2, 5};
+        int[] dangerIndices = {0, 3, 4, 7, 8};
+        int[] cautionIndices = {6, 1};
+        int[] normalIndices = {2, 5};
 
         // 위험 체크
         for (int idx : dangerIndices) {
@@ -44,8 +44,10 @@ public class ChecklistServiceImpl implements ChecklistService {
         }
 
         // 주의 체크
-        if (!checkedList.get(cautionIndex)) {
-            return "주의";
+        for (int idx : cautionIndices) {
+            if (!checkedList.get(idx)) {
+                return "주의";
+            }
         }
 
         // 보통 체크
@@ -58,7 +60,6 @@ public class ChecklistServiceImpl implements ChecklistService {
         // 모두 true일 경우
         return "안전";
     }
-
 
 
 }

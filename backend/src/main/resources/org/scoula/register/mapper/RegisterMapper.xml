@@ -9,12 +9,12 @@
         <selectKey keyProperty="registryId" order="AFTER" resultType="int">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        INSERT INTO registry_analysis (user_id, address, risks, registry_name, registry_rating, file_name)
-        VALUES (#{userId}, #{address}, #{risks}, #{registryName}, #{registryRating}, #{fileName})
+        INSERT INTO registry_analysis (user_id, address, risks, registry_name, registry_rating, file_name, total_prior_amount)
+        VALUES (#{userId}, #{address}, #{risks}, #{registryName}, #{registryRating}, #{fileName}, #{totalPriorAmount})
     </insert>
     <!-- registryId로 조회 -->
     <select id="selectByRegisterId" parameterType="int" resultType="org.scoula.register.domain.dto.RegisterDTO">
-        SELECT registry_id, user_id, address, risks, registry_name, registry_rating, analysis_date, status, file_name
+        SELECT registry_id, user_id, address, risks, registry_name, registry_rating, analysis_date, status, file_name, total_prior_amount
         FROM registry_analysis
         WHERE registry_id = #{registryId}
     </select>

@@ -1,6 +1,8 @@
 // src/stores/termStore.js
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import api from '@/api/index.js';
+import { useAuthStore } from '@/stores/auth';
 
 export const useTermStore = defineStore('term', {
   state: () => ({
@@ -14,7 +16,7 @@ export const useTermStore = defineStore('term', {
       this.loading = true;
       this.error = null;
       try {
-        const res = await axios.get('/api/term-manager');
+        const res = await api.get('/api/term-manager');
         this.terms = res.data;
       } catch (err) {
         this.error = err;
@@ -25,7 +27,10 @@ export const useTermStore = defineStore('term', {
 
     async addTerm(newTerm) {
       try {
-        await axios.post('/api/term-manager', newTerm);
+        const auth = useAuthStore();
+        await axios.post('/api/term-manager', newTerm, {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        });
         await this.fetchTerms(); // 최신 목록 반영
       } catch (err) {
         this.error = err;
@@ -35,7 +40,10 @@ export const useTermStore = defineStore('term', {
 
     async updateTerm(id, updatedTerm) {
       try {
-        await axios.put(`/api/term-manager/${id}`, updatedTerm);
+        const auth = useAuthStore();
+        await axios.put(`/api/term-manager/${id}`, updatedTerm, {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        });
         await this.fetchTerms(); // 최신 목록 반영
       } catch (err) {
         this.error = err;
@@ -45,7 +53,10 @@ export const useTermStore = defineStore('term', {
 
     async deleteTerm(id) {
       try {
-        await axios.delete(`/api/term-manager/${id}`);
+        const auth = useAuthStore();
+        await axios.delete(`/api/term-manager/${id}`, {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        });
         this.terms = this.terms.filter((t) => t.termId !== id);
       } catch (err) {
         this.error = err;
@@ -59,7 +70,7 @@ export const useTermStore = defineStore('term', {
 
     async fetchTermById(id) {
       try {
-        const res = await axios.get(`/api/term-manager/${id}`);
+        const res = await api.get(`/api/term-manager/${id}`);
         return res.data;
       } catch (err) {
         this.error = err;

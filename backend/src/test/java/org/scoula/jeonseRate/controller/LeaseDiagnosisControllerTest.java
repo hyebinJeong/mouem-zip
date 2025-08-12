@@ -17,6 +17,27 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LeaseDiagnosisControllerTest {
 
+    // DealSearchService - 면적 필터링 검증
+    class DealServiceWithAreaCheck extends DealSearchService {
+        public DealServiceWithAreaCheck() { super(null, null); }
+
+        @Override
+        public Optional<JeonseRateDTO> getDealAmount(
+                String lawdCode, String jibun, String buildingName, List<String> recentMonths, Double targetArea) {
+            // 면적이 제대로 전달되는지 검증
+            assertEquals("123", jibun);
+            assertNull(buildingName);
+            assertNotNull(targetArea);
+            assertEquals(84.03, targetArea); // 테스트에서 넣은 값과 같은지 확인
+            System.out.println("테스트에서 받은 면적: " + targetArea);
+
+            JeonseRateDTO dto = new JeonseRateDTO();
+            dto.setAreaAVGPrice(200000);
+            dto.setBuildingType("아파트");
+            return Optional.of(dto);
+        }
+    }
+
     // AddressService - 건물명 없게 처리
     class NoBuildingNameAddressService extends AddressService {
         public NoBuildingNameAddressService() { super(null); }
@@ -30,7 +51,7 @@ public class LeaseDiagnosisControllerTest {
     class DealServiceExpectJibunOnly extends DealSearchService {
         public DealServiceExpectJibunOnly() { super(null, null); }
         @Override
-        public Optional<JeonseRateDTO> getDealAmount(String lawdCode, String jibun, String buildingName, List<String> recentMonths) {
+        public Optional<JeonseRateDTO> getDealAmount(String lawdCode, String jibun, String buildingName, List<String> recentMonths, Double targetArea) {
             assertNull(buildingName);
             assertEquals("123", jibun);
             JeonseRateDTO dto = new JeonseRateDTO();
@@ -44,7 +65,7 @@ public class LeaseDiagnosisControllerTest {
     class DealServiceNoDeal extends DealSearchService {
         public DealServiceNoDeal() { super(null, null); }
         @Override
-        public Optional<JeonseRateDTO> getDealAmount(String lawdCode, String jibun, String buildingName, List<String> recentMonths) {
+        public Optional<JeonseRateDTO> getDealAmount(String lawdCode, String jibun, String buildingName, List<String> recentMonths, Double targetArea) {
             return Optional.empty();
         }
     }
@@ -199,7 +220,7 @@ public class LeaseDiagnosisControllerTest {
         // 실거래가 평균 1억 2500만, 타입: 아파트
         DealSearchService deal = new DealSearchService(null, null) {
             @Override
-            public Optional<JeonseRateDTO> getDealAmount(String lawdCode, String jibun, String buildingName, List<String> recentMonths) {
+            public Optional<JeonseRateDTO> getDealAmount(String lawdCode, String jibun, String buildingName, List<String> recentMonths, Double targetArea) {
                 JeonseRateDTO dto = new JeonseRateDTO();
                 dto.setAreaAVGPrice(125000); // 만원 단위
                 dto.setBuildingType("아파트");
@@ -239,5 +260,27 @@ public class LeaseDiagnosisControllerTest {
         assertEquals(64, mapper.savedVo.getJeonseRatio());         // 전세가율
         assertEquals(54, mapper.savedVo.getRegionAvgJeonseRatio()); // 지역 평균 (반올림)
         assertEquals(SafetyGrade.위험, mapper.savedVo.getJeonseRatioRating()); // 등급
+    }
+
+    @Test
+    void 면적_값이_정상적으로_전달되어야함() {
+        System.out.println("\n테스트: 면적 값 전달 확인");
+        TestMapper mapper = new TestMapper();
+        LeaseDiagnosisController controller = new LeaseDiagnosisController(
+                new NoBuildingNameAddressService(),
+                new DealServiceWithAreaCheck(),
+                new KosisNoData(),
+                mapper
+        );
+
+        JeonseRateDTO req = new JeonseRateDTO();
+        req.setAddress("서울 송파");
+        req.setJeonsePrice(100000);
+        req.setRegisterId(100);
+        req.setUserId(200);
+        req.setExcluUseAr(84.03); // ✅ 면적 세팅
+
+        ResponseEntity<?> res = controller.analyzeLease(req);
+        assertEquals(200, res.getStatusCodeValue());
     }
 }

@@ -21,7 +21,7 @@ const isHtml = (text) => /<\/?[a-z][\s\S]*>/i.test(text);
 </script>
 
 <template>
-  <div class="GuidebookSection checklist-section mb-5">
+  <section class="GuidebookSection checklist-section mb-5">
     <h5 class="fw-bold mb-3">{{ title }}</h5>
 
     <ul class="list-group">
@@ -53,13 +53,10 @@ const isHtml = (text) => /<\/?[a-z][\s\S]*>/i.test(text);
         ></div>
       </li>
     </ul>
-  </div>
+  </section>
 </template>
 
 <style scoped>
-/* .GuidebookSection {
-} */
-
 .text-green {
   color: #007c06;
 }

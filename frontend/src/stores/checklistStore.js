@@ -1,6 +1,6 @@
 export default [
     '임대인의 미납 세금을 확인하셨습니까? <span style="color:#1238b6;">️<br/><a href="https://www.hometax.go.kr" target="_blank" style="color:#1A80E5;">홈택스</a>를 통해 확인이 가능합니다.</span>',
-    '확정일자를 받으셨습니까?<span style="color:#1238b6;"><br/><a href="https://www.iros.go.kr" target="_blank" style="color:#1A80E5;">인터넷 등기소</a>를 통해 발급이 가능합니다.</span>',
+    '계약금·중도금·잔금 지급일 및 금액이 일치하는지 확인하셨습니까?',
     '입주 전 수리에 대해 확인하셨습니까?',
     '임대인이 등기부등본 상 소유주와 일치하는지 확인하셨습니까?',
     '임대인을 통해 선순위 세입자별 전세보증금 수준이 얼마인지 확인하셨습니까?',

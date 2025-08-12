@@ -32,17 +32,13 @@ public class KakaoOAuthController {
     }
 
     @PostMapping("/unlink")
-    public ResponseEntity<?> unlink(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @RequestBody Map<String, String> body
-    ) {
+    public ResponseEntity<Void> unlink(@RequestHeader("Authorization") String authorizationHeader) {
         String jwt = authorizationHeader.replace("Bearer ", "");
-        String kakaoAccessToken = body.get("kakaoAccessToken");
-
-        kakaoOAuthService.unlinkKakaoAccount(kakaoAccessToken);
-
         String kakaoId = jwtProcessor.getKakaoId(jwt);
-        kakaoOAuthService.softDeleteUser(kakaoId);
+
+
+        kakaoOAuthService.unlinkByAdminKey(Long.parseLong(kakaoId));
+        kakaoOAuthService.softDeleteUser(kakaoId); // state=false 등
 
         return ResponseEntity.ok().build();
     }

@@ -30,7 +30,7 @@ onMounted(async () => {
 function onContractClick(item) {
   router.push({
     name: 'ReferenceContractSuccess',
-    query: { id: item.contractId, from: 'list' },
+    query: { id: item.contractId, from: 'myPage' },
   });
 }
 </script>

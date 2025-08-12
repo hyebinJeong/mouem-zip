@@ -18,7 +18,6 @@ if (code) {
     })
     .then((res) => {
       auth.login(res.data.jwt); // JWT 저장
-      sessionStorage.setItem('kakaoAccessToken', res.data.kakaoAccessToken); // sessionStorage에 카카오 액세스 토큰 저장 -> 회원탈퇴 시 사용
       const payload = JSON.parse(atob(res.data.jwt.split('.')[1]));
       if (payload.role === 'ROLE_ADMIN') {
         router.replace('/category'); // 관리자면 바로 /category 이동

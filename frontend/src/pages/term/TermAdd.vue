@@ -67,7 +67,6 @@
             {{ category.categoryName }}
           </option>
         </select>
-
       </div>
 
       <div class="text-end mt-4">
@@ -84,8 +83,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTermStore } from '@/stores/termStore';
-import axios from 'axios';
-
+import api from '@/api/index.js';
 const router = useRouter();
 const termStore = useTermStore();
 
@@ -95,7 +93,6 @@ const termExample = ref('');
 const termCaution = ref('');
 const categoryId = ref('');
 const categories = ref([]);
-
 const goBack = () => {
   router.back();
 };
@@ -129,7 +126,7 @@ const submitForm = async () => {
 
 onMounted(async () => {
   try {
-    const res = await axios.get('/api/category-manager'); // 엔드포인트 확인
+    const res = await api.get('/api/category-manager'); // 엔드포인트 확인
     categories.value = res.data;
   } catch (error) {
     console.error('카테고리 로딩 실패:', error);

@@ -1,8 +1,8 @@
 <script setup>
 import GuidebookSection from '@/components/GuidebookSection.vue';
 import { useNavigation } from '@/composables/final-report/useNavigation';
-import Buddy from "@/components/BuddyHelper.vue";
-import TermViewModal from "@/components/TermViewModal.vue";
+import Buddy from '@/components/BuddyHelper.vue';
+import TermViewModal from '@/components/TermViewModal.vue';
 
 import { ref } from 'vue';
 
@@ -71,37 +71,38 @@ const onContractDayItems = [
 </script>
 
 <template>
-  <div
+  <section
     class="GuidebookPage d-flex justify-content-center align-items-center vh-100 bg-light"
+    aria-labelledby="guidebook-title"
   >
-    <div
+    <article
       class="guidebook-box bg-white rounded-4 shadow-sm p-4 d-flex flex-column"
     >
-      <h1 class="fs-4 fw-bold text-center mb-3 my-2">
+      <h1 class="fs-4 fw-bold text-center mb-3 my-2" id="guidebook-title">
         계약서에 안 나오는 부분까지,
         <!-- 모바일에서만 줄 바꿈 -->
         <br class="d-block d-md-none" />
         안전하게 확인해보세요.
       </h1>
-      <div class="guidebook-content flex-grow-1 overflow-auto pe-2 py-4">
+      <section class="guidebook-content flex-grow-1 overflow-auto pe-2 py-4">
         <GuidebookSection title="계약 전" :items="beforeContractItems" />
         <GuidebookSection title="계약 당일" :items="onContractDayItems" />
-      </div>
-      <div class="guidebook-btn text-center mt-3">
+      </section>
+      <nav class="guidebook-btn text-center mt-3">
         <button
           class="btn btn-primary px-4 py-2 rounded-3 background-main"
           @click="goToHome"
         >
           확인완료
         </button>
-      </div>
-    </div>
+      </nav>
+    </article>
     <!-- 버디 캐릭터 -->
     <Buddy @open-dictionary="openDictionaryModal" />
 
     <!-- 용어 모달 -->
     <TermViewModal v-if="showDictionaryModal" @close="closeDictionaryModal" />
-  </div>
+  </section>
 </template>
 
 <style scoped>

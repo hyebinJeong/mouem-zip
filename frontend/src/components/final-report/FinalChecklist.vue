@@ -12,8 +12,10 @@ const uncheckedItems = computed(() => {
 </script>
 
 <template>
-  <div class="FinalChecklist">
-    <div
+  <section class="FinalChecklist" aria-labelledby="unchecked-title">
+    <!-- 스크린 리더용 숨김 제목 -->
+    <h2 id="unchecked-title" class="visually-hidden">체크하지 않은 항목</h2>
+    <article
       v-for="(item, index) in uncheckedItems"
       :key="index"
       class="checkedlist-box p-3 rounded mb-3 text-start"
@@ -21,8 +23,8 @@ const uncheckedItems = computed(() => {
       aria-label="체크하지 않은 항목"
     >
       <p class="mb-0" v-html="item"></p>
-    </div>
-  </div>
+    </article>
+  </section>
 </template>
 
 <style scoped>

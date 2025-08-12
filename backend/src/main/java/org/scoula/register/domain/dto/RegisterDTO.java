@@ -22,4 +22,5 @@ public class RegisterDTO {
     private LocalDateTime analysisDate;
     private boolean status;
     private String fileName;
+    private long totalPriorAmount;
 }
